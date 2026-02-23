@@ -137,26 +137,7 @@ func WrapCommand(client, binPath string) CommandConfig {
 			Binary:    "java",
 			ExtraArgs: []string{"-jar", binPath},
 		}
-	case "nethermind":
-		return CommandConfig{
-			Binary: binPath,
-			Env:    findDotnetEnv(),
-		}
 	default:
 		return CommandConfig{Binary: binPath}
 	}
-}
-
-func findDotnetEnv() []string {
-	for _, dir := range []string{
-		"/tmp/dotnet",
-		"/usr/share/dotnet",
-		"/usr/local/share/dotnet",
-	} {
-		if _, err := os.Stat(filepath.Join(dir, "dotnet")); err == nil {
-			return []string{"DOTNET_ROOT=" + dir}
-		}
-	}
-
-	return nil
 }

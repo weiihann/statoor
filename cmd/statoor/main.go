@@ -194,12 +194,11 @@ func runBenchmark(
 	// Step 3: Prepare DB directory.
 	dbDir := cfg.dbDir
 	if dbDir == "" {
-		dbDir, err = os.MkdirTemp("", "statoor-db-*")
-		if err != nil {
-			return fmt.Errorf("create temp db dir: %w", err)
-		}
+		dbDir = "tmp"
+	}
 
-		defer os.RemoveAll(dbDir)
+	if err = os.MkdirAll(dbDir, 0o755); err != nil {
+		return fmt.Errorf("create db dir: %w", err)
 	}
 
 	// Step 4: Run each harness sequentially.
