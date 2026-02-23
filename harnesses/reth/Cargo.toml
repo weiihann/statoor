@@ -1,0 +1,29 @@
+[package]
+name = "reth-harness"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+
+[dependencies]
+# reth
+reth-db = { path = "/mnt/disk0/vibecode/statoor/reth/crates/storage/db", features = ["mdbx"] }
+reth-db-api = { path = "/mnt/disk0/vibecode/statoor/reth/crates/storage/db-api" }
+reth-trie = { path = "/mnt/disk0/vibecode/statoor/reth/crates/trie/trie" }
+reth-trie-db = { path = "/mnt/disk0/vibecode/statoor/reth/crates/trie/db" }
+reth-primitives-traits = { path = "/mnt/disk0/vibecode/statoor/reth/crates/primitives-traits", features = ["std"] }
+
+# alloy
+alloy-primitives = { version = "1.5.6", features = ["k256"] }
+alloy-consensus = { version = "1.7.3" }
+
+# cli + serialization
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# error handling
+eyre = "0.6"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
