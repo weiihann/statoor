@@ -1,0 +1,24 @@
+[package]
+name = "ethrex-harness"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ethrex-storage = { path = "/mnt/disk0/vibecode/statoor/ethrex/crates/storage", features = ["rocksdb"] }
+ethrex-common = { path = "/mnt/disk0/vibecode/statoor/ethrex/crates/common" }
+ethrex-trie = { path = "/mnt/disk0/vibecode/statoor/ethrex/crates/common/trie" }
+ethrex-rlp = { path = "/mnt/disk0/vibecode/statoor/ethrex/crates/common/rlp" }
+
+clap = { version = "4.3", features = ["derive"] }
+hex = "0.4.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bytes = "1.6"
+ethereum-types = "0.15.1"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "warn"
+module_name_repetitions = "allow"
+similar_names = "allow"
