@@ -56,6 +56,11 @@ func (r *Runner) Run(ctx context.Context, cfg RunConfig) (*Result, error) {
 	}
 
 	dbDir := filepath.Join(cfg.DBDir, r.Name)
+
+	if err := os.RemoveAll(dbDir); err != nil {
+		return nil, fmt.Errorf("clean db dir %s: %w", dbDir, err)
+	}
+
 	if err := os.MkdirAll(dbDir, 0o755); err != nil {
 		return nil, fmt.Errorf("create db dir %s: %w", dbDir, err)
 	}
