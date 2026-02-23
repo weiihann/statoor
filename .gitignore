@@ -2,3 +2,22 @@ bin/
 *.exe
 *.test
 *.out
+
+# Go harness binaries
+harnesses/geth/geth-harness
+harnesses/geth/geth
+harnesses/erigon/erigon-harness
+harnesses/erigon/erigon
+/statoor
+
+# Rust build artifacts
+harnesses/reth/target/
+harnesses/ethrex/target/
+
+# Java/Gradle build artifacts
+harnesses/besu/build/
+harnesses/besu/.gradle/
+
+# .NET build artifacts
+harnesses/nethermind/bin/
+harnesses/nethermind/obj/

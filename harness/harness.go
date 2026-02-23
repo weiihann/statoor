@@ -24,14 +24,25 @@ type RunConfig struct {
 type Runner struct {
 	Name       string
 	BinaryPath string
+	ExtraArgs  []string
+	Env        []string
 	Logger     *slog.Logger
 }
 
 // NewRunner creates a Runner for the named client.
-func NewRunner(name, binaryPath string, logger *slog.Logger) *Runner {
+// For clients that need a wrapper (e.g. java -jar for besu),
+// pass the wrapper command as binaryPath and the JAR path
+// in extraArgs. Env is appended to the inherited environment.
+func NewRunner(
+	name, binaryPath string,
+	extraArgs, env []string,
+	logger *slog.Logger,
+) *Runner {
 	return &Runner{
 		Name:       name,
 		BinaryPath: binaryPath,
+		ExtraArgs:  extraArgs,
+		Env:        env,
 		Logger:     logger.With(slog.String("client", name)),
 	}
 }
@@ -49,7 +60,15 @@ func (r *Runner) Run(ctx context.Context, cfg RunConfig) (*Result, error) {
 		return nil, fmt.Errorf("create db dir %s: %w", dbDir, err)
 	}
 
-	cmd := exec.CommandContext(ctx, r.BinaryPath, "--db", dbDir)
+	args := make([]string, 0, len(r.ExtraArgs)+2)
+	args = append(args, r.ExtraArgs...)
+	args = append(args, "--db", dbDir)
+
+	cmd := exec.CommandContext(ctx, r.BinaryPath, args...)
+
+	if len(r.Env) > 0 {
+		cmd.Env = append(os.Environ(), r.Env...)
+	}
 
 	workloadFile, err := os.Open(cfg.WorkloadPath)
 	if err != nil {
