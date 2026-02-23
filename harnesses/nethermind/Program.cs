@@ -106,7 +106,7 @@ while (reader.ReadLine() is { } line)
         {
             Address addr = new(op.Address!);
             UInt256 slot = ParseUInt256(op.Slot!);
-            byte[] value = PadLeft32(
+            byte[] value = TrimLeadingZeros(
                 Convert.FromHexString(
                     StripHexPrefix(op.Value!)));
             StorageCell cell = new(addr, slot);
@@ -213,13 +213,14 @@ static string StripHexPrefix(string s)
         ? s[2..] : s;
 }
 
-static byte[] PadLeft32(byte[] input)
+static byte[] TrimLeadingZeros(byte[] input)
 {
-    if (input.Length >= 32)
-        return input;
-    byte[] padded = new byte[32];
-    input.CopyTo(padded, 32 - input.Length);
-    return padded;
+    int start = 0;
+    while (start < input.Length && input[start] == 0)
+        start++;
+    if (start == input.Length)
+        return [];
+    return input[start..];
 }
 
 static void Fatal(string message)
