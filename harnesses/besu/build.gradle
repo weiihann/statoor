@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.gradleup.shadow' version '9.0.0-beta12'
+}
+
+group = 'io.github.statoor'
+version = '0.1.0'
+
+def besuVersion = '25.12.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+application {
+    mainClass = 'io.github.statoor.besu.Main'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://hyperledger.jfrog.io/hyperledger/besu-maven'
+        content { includeGroupByRegex('org\\.hyperledger\\..*') }
+    }
+    maven {
+        url = 'https://artifacts.consensys.net/public/maven/maven/'
+        content { includeGroupByRegex('tech\\.pegasys(\\..*)?') }
+    }
+}
+
+configurations.all {
+    exclude group: 'io.tmio', module: 'tuweni-bytes'
+    exclude group: 'io.tmio', module: 'tuweni-crypto'
+    exclude group: 'io.tmio', module: 'tuweni-rlp'
+    exclude group: 'io.tmio', module: 'tuweni-units'
+    // Exclude log4j2 slf4j binding to avoid conflict with slf4j-nop
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j2-impl'
+    exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
+}
+
+dependencies {
+    // Besu modules (published on Hyperledger Artifactory)
+    implementation "org.hyperledger.besu.internal:besu-ethereum-core:${besuVersion}"
+    implementation "org.hyperledger.besu.internal:besu-ethereum-trie:${besuVersion}"
+    implementation "org.hyperledger.besu.internal:besu-ethereum-rlp:${besuVersion}"
+    implementation "org.hyperledger.besu:besu-evm:${besuVersion}"
+    implementation "org.hyperledger.besu:besu-datatypes:${besuVersion}"
+    implementation "org.hyperledger.besu:besu-plugin-api:${besuVersion}"
+    implementation "org.hyperledger.besu.internal:besu-services-kvstore:${besuVersion}"
+
+    // Tuweni (required at compile time for Bytes, UInt256, Wei)
+    implementation 'io.consensys.tuweni:tuweni-bytes:2.7.2'
+    implementation 'io.consensys.tuweni:tuweni-units:2.7.2'
+
+    // JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+
+    // Logging (Besu uses slf4j; provide a silent binding)
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    runtimeOnly 'org.slf4j:slf4j-nop:2.0.17'
+}
+
+shadowJar {
+    archiveBaseName = 'besu-harness'
+    archiveClassifier = ''
+    archiveVersion = ''
+    mergeServiceFiles()
+}
+
+tasks.named('build') {
+    dependsOn shadowJar
+}
